@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "188834974456",
+    "firebase_url": "https://iubh-gamer-app.firebaseio.com",
+    "project_id": "iubh-gamer-app",
+    "storage_bucket": "iubh-gamer-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188834974456:android:51737864d594977bd7490d",
+        "android_client_info": {
+          "package_name": "com.example.iubhgamerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "188834974456-mtfb78k43snrjdf49283bmi8cg9ba9ji.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.iubhgamerapp",
+            "certificate_hash": "b90c0d7aaba6aae69e76f1b2c3a28a6fdaea5311"
+          }
+        },
+        {
+          "client_id": "188834974456-u95ei6cncprj4i98rrol8nbth6ugqa0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjJjmSoKzTT-k1mJLjJQk1A0drFKNAIIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "188834974456-u95ei6cncprj4i98rrol8nbth6ugqa0f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

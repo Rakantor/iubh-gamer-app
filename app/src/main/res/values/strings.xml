@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">IUBH Gamer App</string>
+    <string name="title_home">Home</string>
+    <string name="title_rate">Rate</string>
+    <string name="title_chat">Chat</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="welcome_back">, welcome back!</string>
+    <string name="chat_invalid_user">DELETED</string>
+    <string name="db_comm_err">Database communication error.</string>
+    <string name="firebase_auth_failed">Authentication failed.</string>
+    <string name="firebase_signin_progress">Signing you in...</string>
+    <string name="firebase_credentials_missing">Email or password field empty!</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="input_dialog_title">Game Title</string>
+    <string name="rate_error">Please rate every item.</string>
+    <string name="zero_ratings">No ratings yet.</string>
+    <string name="other_ratings">Others gave %1$d* (%2$d ratings)</string>
+</resources>
