@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">IUBH Gamer App</string>
+    <string name="app_name">IU Gamer App</string>
     <string name="title_home">Home</string>
     <string name="title_rate">Rate</string>
     <string name="title_chat">Chat</string>
@@ -11,8 +11,8 @@
     <string name="welcome_back">, welcome back!</string>
     <string name="chat_invalid_user">DELETED</string>
     <string name="db_comm_err">Database communication error.</string>
-    <string name="firebase_auth_failed">Authentication failed.</string>
-    <string name="firebase_signin_progress">Signing you in...</string>
+    <string name="firebase_auth_failed">Invalid email or password.</string>
+    <string name="firebase_signin_progress">Signing you in…</string>
     <string name="firebase_credentials_missing">Email or password field empty!</string>
     <string name="btn_cancel">Cancel</string>
     <string name="input_dialog_title">Game Title</string>
