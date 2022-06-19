@@ -67,7 +67,7 @@
                 android:id="@+id/text_home4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="The next event will be held on"
+                android:text="The next event will be on"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -84,7 +84,7 @@
                 android:id="@+id/text_home3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="at"
+                android:text="hosted by"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 

@@ -142,7 +142,7 @@ public class ChatFragment extends Fragment {
 
             // Convert epoch timestamp to formatted date string
             Date date = new Date(timestamp * 1000L);
-            this.date = new SimpleDateFormat("dd.MM.YYYY  HH:mm", Locale.getDefault()).format(date);
+            this.date = new SimpleDateFormat("dd.MM.yyyy  HH:mm", Locale.getDefault()).format(date);
 
             // Check if the sender's user id still exist in the database.
             // If so, extract their nickname

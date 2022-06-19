@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_rate"
-        android:name="com.example.iubhgamerapp.ui.RateFragment"
+        android:name="com.example.iubhgamerapp.ui.RatingFragment"
         android:label="@string/title_rate"
-        tools:layout="@layout/fragment_rate" />
+        tools:layout="@layout/fragment_rating" />
 
     <fragment
         android:id="@+id/navigation_chat"

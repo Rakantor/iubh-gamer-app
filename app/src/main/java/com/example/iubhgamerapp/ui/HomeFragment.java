@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment {
     private View root;
@@ -44,7 +43,6 @@ public class HomeFragment extends Fragment {
     private DataSnapshot dsUsers, dsGames;
     private ProgressBar progressBar;
     private TextView welcome, nextDate, nextHost;
-    private Button btnSignOut, btnVote, btnSuggest;
     private Spinner spinnerGames;
     private Map<Long, Integer> games = new HashMap<>();
     private String userNickname, nextDateID;
@@ -55,11 +53,11 @@ public class HomeFragment extends Fragment {
         welcome = root.findViewById(R.id.text_home);
         nextDate = root.findViewById(R.id.text_home2);
         nextHost = root.findViewById(R.id.text_home5);
-        btnSignOut = root.findViewById(R.id.logout);
-        btnVote = root.findViewById(R.id.vote);
-        btnSuggest = root.findViewById(R.id.suggest);
         spinnerGames = root.findViewById(R.id.spinner_games);
         progressBar = root.findViewById(R.id.progressBar);
+        Button btnSignOut = root.findViewById(R.id.logout);
+        Button btnVote = root.findViewById(R.id.vote);
+        Button btnSuggest = root.findViewById(R.id.suggest);
 
         // Set button listeners
         btnSignOut.setOnClickListener(v -> signOutUser());
@@ -76,28 +74,41 @@ public class HomeFragment extends Fragment {
         refGames = FirebaseDatabase.getInstance().getReference("spiele");
         refUsers = FirebaseDatabase.getInstance().getReference("spieler");
 
-        // Get list of registered users from database
-        refUsers.addValueEventListener(new ValueEventListener() {
+        // Get a list of all players from the database and store as DataSnapshot,
+        // then check whether a new event needs to be added to the database.
+        refUsers.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 dsUsers = dataSnapshot;
-                setValues();
+                updateUI();
+                checkUpcomingEvent();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), R.string.db_comm_err, Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Get list of available games from database
+        // Update the UI whenever the list of players changes in the database
+        refUsers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                dsUsers = dataSnapshot;
+                updateUI();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), R.string.db_comm_err, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Update the UI whenever the list of games changes in the database
         refGames.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 dsGames = dataSnapshot;
                 updateGamesList();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getContext(), R.string.db_comm_err, Toast.LENGTH_SHORT).show();
@@ -116,13 +127,88 @@ public class HomeFragment extends Fragment {
         if(isActive) {
             progressBar.setVisibility(View.VISIBLE);
             // Disable user interaction while progress bar is visible
-            Objects.requireNonNull(getActivity()).getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            requireActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         } else if(progressBar.getVisibility() == View.VISIBLE) {
             progressBar.setVisibility(View.GONE);
             // Re-enable user interaction when progress bar is gone
-            Objects.requireNonNull(getActivity()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
+    }
+
+    /**
+     *
+     * Then get the most recent event next and check if .
+     * If so, a new event is added.
+     */
+    private void checkUpcomingEvent() {
+        refEventDates.orderByKey().limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    nextDateID = ds.getKey();
+                    long epoch = Long.parseLong(nextDateID);
+
+                    if(epoch < (System.currentTimeMillis() / 1000L)) {
+                        addUpcomingEvent(epoch);
+                    }
+
+                    Date date = new Date(epoch * 1000L);
+                    String s = new SimpleDateFormat("dd. MMMM yyyy", Locale.getDefault()).format(date);
+                    nextDate.setText(s);
+
+                    String sNextHostUID = (String) ds.child("gastgeber").getValue();
+                    String sNextHost = (String)dsUsers.child(sNextHostUID).child("nickname").getValue();
+                    nextHost.setText(sNextHost);
+
+                    if(ds.hasChild("abstimmung_spiele")) {
+                        games = new HashMap<>();
+                        for(DataSnapshot dataSnapshot1 : ds.child("abstimmung_spiele").getChildren()) {
+                            long curInt = (long)dataSnapshot1.getValue();
+
+                            if(games.containsKey(curInt)) games.put(curInt, games.get(curInt)+1);
+                            else games.put(curInt, 1);
+                        }
+                    }
+                }
+                setProgressBar(false);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), R.string.db_comm_err, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
+     * Determines the date and host of the next event and writes the details to the database.
+     * If this was a real life app and not just an example project, it would be advisable to handle
+     * event setup automatically with scheduled functions running on the server (a possible
+     * solution could be Google Cloud Functions for Firebase).
+     * @param prevEventTimestamp Unix epoch time of the previous event
+     */
+    private void addUpcomingEvent(long prevEventTimestamp) {
+        // Programmatically determine the host of the upcoming event by iterating through the list
+        // of registered users and comparing the epoch timestamps of their most recently hosted event.
+        // The lowest timestamp will determine the new host.
+        String nextHostUID = null;
+        long ll = 0;
+        for(DataSnapshot dataSnapshot : dsUsers.getChildren()) {
+            long ts = (long)dataSnapshot.child("zuletzt_gehostet").getValue();
+            if(ll == 0 || ts < ll) {
+                ll = ts;
+                nextHostUID = dataSnapshot.getKey();
+            }
+        }
+
+        // Calculate epoch timestamp of upcoming event
+        // It will take place exactly 1 week after the last event.
+        // 7 days * 24 hours * 60 minutes * 60 seconds = 604800
+        long nextEventTimestamp = prevEventTimestamp + 604800;
+
+        // Write to database
+        refEventDates.child(String.valueOf(nextEventTimestamp)).child("gastgeber").setValue(nextHostUID);
+        refUsers.child(nextHostUID).child("zuletzt_gehostet").setValue(nextEventTimestamp);
     }
 
     /**
@@ -167,82 +253,10 @@ public class HomeFragment extends Fragment {
         spinnerGames.setAdapter(adapter);
     }
 
-    private void setValues() {
-        // Get details of upcoming event from database
-        refEventDates.orderByKey().limitToLast(1).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    nextDateID = ds.getKey();
-                    long epoch = Long.parseLong(nextDateID);
-
-                    if(epoch < (System.currentTimeMillis() / 1000L)) {
-                        addUpcomingEvent(epoch);
-                        return;
-                    }
-
-                    Date date = new Date(epoch * 1000L);
-                    String s = new SimpleDateFormat("dd. MMMM YYYY", Locale.getDefault()).format(date);
-                    nextDate.setText(s);
-
-                    String sNextHostUID = (String) ds.child("gastgeber").getValue();
-                    String sNextHost = (String)dsUsers.child(sNextHostUID).child("nickname").getValue();
-                    nextHost.setText(sNextHost + "'s place");
-
-                    if(ds.hasChild("abstimmung_spiele")) {
-                        games = new HashMap<>();
-                        for(DataSnapshot dataSnapshot1 : ds.child("abstimmung_spiele").getChildren()) {
-                            long curInt = (long)dataSnapshot1.getValue();
-
-                            if(games.containsKey(curInt)) games.put(curInt, games.get(curInt)+1);
-                            else games.put(curInt, 1);
-                        }
-                    }
-                }
-                updateGamesList();
-                setProgressBar(false);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), R.string.db_comm_err, Toast.LENGTH_SHORT).show();
-            }
-        });
-
+    private void updateUI() {
         userNickname = (String)dsUsers.child(mUser.getUid()).child("nickname").getValue();
-
         String sWelcome = userNickname + getString(R.string.welcome_back);
         welcome.setText(sWelcome);
-    }
-
-    /**
-     * Determines the date and host of the next event and writes the details to the database.
-     * If this was a real life app and not just an example project, it would be advisable to handle
-     * event setup automatically with scheduled functions running on the server (a possible
-     * solution could be Google Cloud Functions for Firebase).
-     * @param prevEventTimestamp Unix epoch time of the previous event
-     */
-    private void addUpcomingEvent(long prevEventTimestamp) {
-        // Programmatically determine the host of the upcoming event by iterating through the list
-        // of registered users and comparing the epoch timestamps of their most recently hosted event.
-        // The lowest timestamp will determine the new host.
-        String nextHostUID = null;
-        long ll = 0;
-        for(DataSnapshot dataSnapshot : dsUsers.getChildren()) {
-            long ts = (long)dataSnapshot.child("zuletzt_gehostet").getValue();
-            if(ll == 0 || ts < ll) {
-                ll = ts;
-                nextHostUID = dataSnapshot.getKey();
-            }
-        }
-
-        // Calculate epoch timestamp of upcoming event
-        // It will take place exactly 1 week after the last event.
-        // 7 days * 24 hours * 60 minutes * 60 seconds = 604800
-        long nextEventTimestamp = prevEventTimestamp + 604800;
-
-        // Write to database
-        refEventDates.child(String.valueOf(nextEventTimestamp)).child("gastgeber").setValue(nextHostUID);
     }
 
     /**
@@ -251,6 +265,6 @@ public class HomeFragment extends Fragment {
     private void signOutUser() {
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(getActivity(), LoginActivity.class));
-        Objects.requireNonNull(getActivity()).finish();
+        requireActivity().finish();
     }
 }
