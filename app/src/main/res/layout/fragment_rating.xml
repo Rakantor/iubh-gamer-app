@@ -34,7 +34,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select past event" />
+                android:text="Vergangenen Spieltermin auswählen" />
 
             <Spinner
                 android:id="@+id/spinner_rating"
@@ -55,7 +55,7 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Overall" />
+                android:text="Gesamtbewertung" />
 
             <RatingBar
                 android:id="@+id/ratingBar_overall"
@@ -81,7 +81,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Food and Drinks" />
+                android:text="Essen & Trinken" />
 
             <RatingBar
                 android:id="@+id/ratingBar_food"

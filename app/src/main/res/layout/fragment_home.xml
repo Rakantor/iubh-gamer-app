@@ -67,7 +67,7 @@
                 android:id="@+id/text_home4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="The next event will be on"
+                android:text="Der nächste Spieltermin ist am"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -84,7 +84,7 @@
                 android:id="@+id/text_home3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="hosted by"
+                android:text="bei"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -130,7 +130,7 @@
                 android:id="@+id/text_home6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Vote for your favorite game"
+                android:text="Stimme ab für dein Lieblingsspiel!"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -149,13 +149,13 @@
                 android:id="@+id/vote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vote" />
+                android:text="Abstimmen" />
 
             <TextView
                 android:id="@+id/text_home7"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="or"
+                android:text="oder"
                 android:textAlignment="center"
                 android:textSize="14sp" />
 
@@ -163,7 +163,7 @@
                 android:id="@+id/suggest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Suggest a new game" />
+                android:text="Neues Spiel vorschlagen" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
@@ -174,8 +174,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
-        android:text="Sign out"
+        android:text="Ausloggen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
