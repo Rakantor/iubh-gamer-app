@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
     private View root;
@@ -45,7 +46,7 @@ public class HomeFragment extends Fragment {
     private TextView welcome, nextDate, nextHost;
     private Spinner spinnerGames;
     private Map<Long, Integer> games = new HashMap<>();
-    private String userNickname, nextDateID;
+    private String nextDateID;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -147,7 +148,7 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
                     nextDateID = ds.getKey();
-                    long epoch = Long.parseLong(nextDateID);
+                    long epoch = Long.parseLong(Objects.requireNonNull(nextDateID, "Epoch time must not be null!"));
 
                     if(epoch < (System.currentTimeMillis() / 1000L)) {
                         addUpcomingEvent(epoch);
@@ -254,7 +255,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void updateUI() {
-        userNickname = (String)dsUsers.child(mUser.getUid()).child("nickname").getValue();
+        String userNickname = (String) dsUsers.child(mUser.getUid()).child("nickname").getValue();
         String sWelcome = userNickname + getString(R.string.welcome_back);
         welcome.setText(sWelcome);
     }

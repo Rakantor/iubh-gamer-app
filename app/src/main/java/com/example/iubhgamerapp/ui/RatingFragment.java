@@ -33,9 +33,10 @@ import java.util.Locale;
 import java.util.Map;
 
 public class RatingFragment extends Fragment {
+    private final int ratableEventsCount = 5;
     private EventDate selectedEvent;
     private FirebaseUser mUser;
-    private DatabaseReference refUsers, refEvents;
+    private DatabaseReference refEvents;
     private View root;
     private List<EventDate> eventDates;
     private Map<String, String> users;
@@ -70,7 +71,7 @@ public class RatingFragment extends Fragment {
                 rbFood.setRating(selectedEvent.ownFoodRating);
                 rbHost.setRating(selectedEvent.ownHostRating);
 
-                tvHost.setText("Host (" + selectedEvent.hostName + ")");
+                tvHost.setText(getString(R.string.host_rating, selectedEvent.hostName));
 
                 String sNoRatings = getString(R.string.zero_ratings);
 
@@ -92,7 +93,7 @@ public class RatingFragment extends Fragment {
 
         // Connect to Firebase realtime database
         mUser = FirebaseAuth.getInstance().getCurrentUser();
-        refUsers = FirebaseDatabase.getInstance().getReference().child("spieler");
+        DatabaseReference refUsers = FirebaseDatabase.getInstance().getReference().child("spieler");
         refEvents = FirebaseDatabase.getInstance().getReference().child("termine");
 
         // Get list of registered users from Firebase database
@@ -144,7 +145,7 @@ public class RatingFragment extends Fragment {
      * Only the last 3 events can be rated.
      */
     private void getPastEvents() {
-        refEvents.orderByKey().limitToLast(4).addValueEventListener(new ValueEventListener() {
+        refEvents.orderByKey().limitToLast(ratableEventsCount+1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // Iterate through events to extract metadata
@@ -233,7 +234,7 @@ public class RatingFragment extends Fragment {
 
         String getFormattedDate() {
             Date date = new Date(this.epochTimestamp * 1000L);
-            return new SimpleDateFormat("EEEE, dd. MMMM yyyy", Locale.getDefault()).format(date);
+            return new SimpleDateFormat("EEEE, dd. MMMM yyyy", Locale.GERMAN).format(date);
         }
     }
 }

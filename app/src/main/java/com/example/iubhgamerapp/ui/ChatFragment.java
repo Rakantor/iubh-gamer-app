@@ -34,7 +34,7 @@ import java.util.Objects;
 
 public class ChatFragment extends Fragment {
     private FirebaseUser mUser;
-    private DatabaseReference refChatMessages, refUsers;
+    private DatabaseReference refChatMessages;
     private Map<String, String> users;
     private List<ChatMessage> chatMessages;
     private RecyclerView rv;
@@ -54,7 +54,7 @@ public class ChatFragment extends Fragment {
         // Connect to Firebase realtime database
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         refChatMessages = FirebaseDatabase.getInstance().getReference().child("nachrichten");
-        refUsers = FirebaseDatabase.getInstance().getReference().child("spieler");
+        DatabaseReference refUsers = FirebaseDatabase.getInstance().getReference().child("spieler");
 
         // Get list of registered users from Firebase database
         refUsers.addValueEventListener(new ValueEventListener() {
@@ -142,7 +142,7 @@ public class ChatFragment extends Fragment {
 
             // Convert epoch timestamp to formatted date string
             Date date = new Date(timestamp * 1000L);
-            this.date = new SimpleDateFormat("dd.MM.yyyy  HH:mm", Locale.getDefault()).format(date);
+            this.date = new SimpleDateFormat("dd.MM.yyyy  HH:mm", Locale.GERMAN).format(date);
 
             // Check if the sender's user id still exist in the database.
             // If so, extract their nickname
